@@ -16,7 +16,7 @@ public:
 	Matrix();
 	Matrix(int size_x, int size_y, double** matrix) {
 		set_size_x(size_x);
-    	set_size_y(size_y);
+		set_size_y(size_y);
 		set_matrix(matrix);
 	}
 
@@ -26,11 +26,11 @@ public:
 	void set_size_y(int size_y) {
 		this->size_y = size_y;
 	}
-	int get_size_x() { 
-		return size_x; 
+	int get_size_x() {
+		return size_x;
 	}
-	int get_size_y() { 
-		return size_y; 
+	int get_size_y() {
+		return size_y;
 	}
 	void set_matrix(double** matrix) {
 
@@ -51,12 +51,14 @@ public:
 		if (index_x > size_x || index_y > size_y) throw E_Invalid_Index(index_x, index_y);
 	}
 	void print_matrix() {
+		cout << endl;
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < size_y; j++) {
 				cout << "\t" << matrix[i][j] << "\t";
 			}
 			cout << endl;
 		}
+		cout << endl;
 	}
 
 	Matrix& operator = (const Matrix& object) {
@@ -94,8 +96,10 @@ public:
 		return *this;
 	}
 	Matrix& operator * (const Matrix& Object) {
-		double** First_Matrix, **Second_Matrix, **Result_Matrix;
-
+		if (this->size_x != Object.size_y || this->size_y != Object.size_x) throw E_Different_Size();
+		double** First_Matrix{}, ** Second_Matrix{}, ** Result_Matrix{};
+		int First_size_x = this->size_x, First_size_y = this->size_y,
+			Second_size_x = Object.size_x, Second_size_y = Object.size_y;
 		First_Matrix = new double* [size_x];
 		for (int i = 0; i < size_x; i++) {
 			First_Matrix[i] = new double[size_y];
@@ -116,21 +120,78 @@ public:
 			}
 		}
 
-		Result_Matrix = new double* [size_x];
-		for (int i = 0; i < size_x; i++) {
-			Result_Matrix[i] = new double[Object.size_y];
+		if (this->size_x < Object.size_x) {
+			double** Help_Matrix{};
+			Help_Matrix = new double* [size_x];
+			for (int i = 0; i < size_x; i++) {
+				Help_Matrix[i] = new double[size_y];
+			}
+
+			for (int i = 0; i < size_x; i++) {
+				for (int j = 0; j < size_y; j++) {
+					Help_Matrix[i][j] = First_Matrix[i][j];
+				}
+			}
+
+			for (int i = 0; i < size_x; i++) {
+				delete[] First_Matrix[i];
+			}
+			delete[] First_Matrix;
+
+			First_Matrix = new double* [Object.size_x];
+			for (int i = 0; i < Object.size_x; i++) {
+				First_Matrix[i] = new double[Object.size_y];
+			}
+
+			for (int i = 0; i < Object.size_x; i++) {
+				for (int j = 0; j < Object.size_y; j++) {
+					First_Matrix[i][j] = Second_Matrix[i][j];
+				}
+			}
+
+			for (int i = 0; i < size_x; i++) {
+				delete[] Second_Matrix[i];
+			}
+			delete[] Second_Matrix;
+
+			Second_Matrix = new double* [size_x];
+			for (int i = 0; i < size_x; i++) {
+				Second_Matrix[i] = new double[size_y];
+			}
+
+			for (int i = 0; i < size_x; i++) {
+				for (int j = 0; j < size_y; j++) {
+					Second_Matrix[i][j] = Help_Matrix[i][j];
+				}
+			}
+
+			for (int i = 0; i < size_x; i++) {
+				delete[] Help_Matrix[i];
+			}
+			delete[] Help_Matrix;
+
+			int Help_size_x = First_size_x, Help_size_y = First_size_y;
+			First_size_x = Second_size_x; First_size_y = Second_size_y;
+			Second_size_x = Help_size_x; Second_size_y = Help_size_y;
 		}
 
-		for (int row = 0; row < size_x; row++) {
-			for (int col = 0; col < Object.size_y; col++) {
-				for (int inner = 0; inner < size_y; inner++) {
-					Result_Matrix[row][col] += First_Matrix[row][inner] * Second_Matrix[inner][col];
+		Result_Matrix = new double* [First_size_x];
+		for (int i = 0; i < First_size_x; i++) {
+			Result_Matrix[i] = new double[Second_size_y];
+		}
+
+		for (int row = 0; row < First_size_x; row++) {
+			for (int col = 0; col < Second_size_y; col++) {
+				Result_Matrix[row][col] = 0;
+				for (int inner = 0; inner < First_size_y; inner++) {
+					First_Matrix[row][inner] *= Second_Matrix[inner][col];
+					Result_Matrix[row][col] += First_Matrix[row][inner];
 				}
 			}
 		}
 
-		for (int i = 0; i < Object.size_y; i++) {
-			for (int j = 0; j < size_x; j++) {
+		for (int i = 0; i < First_size_x; i++) {
+			for (int j = 0; j < Second_size_y; j++) {
 				this->matrix[i][j] = Result_Matrix[i][j];
 			}
 		}
@@ -153,7 +214,7 @@ int main() {
 	}
 
 	cout << endl << "Введите данные в матрицу:" << endl;
-	for (int i = 0; i < x_size_input; i++){
+	for (int i = 0; i < x_size_input; i++) {
 		for (int j = 0; j < y_size_input; j++) {
 			cout << "Ячейка [" << i + 1 << "][" << j + 1 << "] = ";
 			cin >> matrix_input[i][j];
@@ -174,7 +235,7 @@ int main() {
 	cin >> y_size_input;
 	cout << "Кол-во строк: ";
 	cin >> x_size_input;
-	
+
 	matrix_input = new double* [x_size_input];
 	for (int i = 0; i < x_size_input; i++) {
 		matrix_input[i] = new double[y_size_input];
@@ -194,6 +255,9 @@ int main() {
 	Matrix new_obj(0, 0, matrix_input);
 	new_obj = first_obj;
 
+	system("pause");
+	system("cls");
+
 	cout << "Результат сложения двух матриц:" << endl;
 	try {
 		new_obj + second_obj;
@@ -212,7 +276,7 @@ int main() {
 	cout << endl << "Результат умножения двух матриц:" << endl;
 	try {
 		new_obj = first_obj;
-		new_obj * second_obj;
+		new_obj* second_obj;
 		new_obj.print_matrix();
 	}
 	catch (Error& er) { er.print_message(); }
