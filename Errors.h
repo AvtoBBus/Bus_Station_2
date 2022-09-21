@@ -7,6 +7,11 @@ public:
 	virtual void print_message() const = 0;
 };
 
+class E_Not_Square_Matrix : public Error {
+public:
+	void print_message() const;
+};
+
 class E_Different_Size : public Error {
 public:
 	void print_message() const;

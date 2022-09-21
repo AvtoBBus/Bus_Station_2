@@ -4,6 +4,10 @@
 
 using namespace std;
 
+void E_Not_Square_Matrix::print_message() const {
+	cout << endl << "Error:\nUnreal operation. Matrix haven't square form" << endl;
+}
+
 void E_Different_Size::print_message() const {
 	cout << endl << "Error:\nUnreal operation. Matrix have unsuitable size" << endl;
 }
