@@ -4,6 +4,18 @@
 
 using namespace std;
 
+void E_Determinant_Is_Zero::print_message() const {
+	cout << endl << "Error:\nDeterminant is zero" << endl;
+}
+
+void E_Divizion_By_Zero::print_message() const {
+	cout << endl << "Error:\nDIVIZION BY ZERO" << endl;
+}
+
+void E_No_Suitable_Size::print_message() const {
+	cout << endl << "Error:\nUnreal operation. Matrix haven't size like 3x3" << endl;
+}
+
 void E_Not_Square_Matrix::print_message() const {
 	cout << endl << "Error:\nUnreal operation. Matrix haven't square form" << endl;
 }

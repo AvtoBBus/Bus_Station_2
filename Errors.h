@@ -7,6 +7,21 @@ public:
 	virtual void print_message() const = 0;
 };
 
+class E_Determinant_Is_Zero : public Error {
+public:
+	void print_message() const;
+};
+
+class E_Divizion_By_Zero : public Error {
+public:
+	void print_message() const;
+};
+
+class E_No_Suitable_Size : public Error {
+public:
+	void print_message() const;
+};
+
 class E_Not_Square_Matrix : public Error {
 public:
 	void print_message() const;
@@ -23,4 +38,4 @@ private:
 public:
 	E_Invalid_Index(int index_x, int index_y);
 	void print_message() const;
-}; 
+};
