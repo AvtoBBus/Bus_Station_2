@@ -11,7 +11,7 @@ using namespace std;
 int Matrix::calculate_determinant() {
 	int determinant = matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[2][1] * matrix[1][2]) -
 		matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-		matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
+		matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]); 
 	return determinant;
 }
 
@@ -33,9 +33,11 @@ int Matrix::get_size_x() const {
 int Matrix::get_size_y() const {
 	return size_y;
 }
+
 int Matrix::get_value_in_cell(int index_x, int index_y) const {
 	return matrix[index_x][index_y];
 }
+
 void Matrix::set_matrix(double** matrix) {
 
 	this->matrix = new double* [size_x];
@@ -50,10 +52,11 @@ void Matrix::set_matrix(double** matrix) {
 	}
 }
 
-
 void Matrix::set_value_index(double value, int index_x, int index_y) {
 	if (index_x > size_x || index_y > size_y) throw E_Invalid_Index(index_x, index_y);
+	//&
 }
+
 void Matrix::print_matrix() {
 	cout << endl;
 	for (int i = 0; i < size_x; i++) {
@@ -190,7 +193,7 @@ Matrix& operator * (const int scalar, Matrix& Object) {
 Matrix& Matrix::operator / (const int scalar) {
 	if (scalar == 0) throw E_Divizion_By_Zero();
 	for (int i = 0; i < this->size_x; i++) {
-		for (int j = 0; j < this->size_x; j++) {
+		for (int j = 0; j < this->size_y; j++) {
 			this->matrix[i][j] /= scalar;
 		}
 	}

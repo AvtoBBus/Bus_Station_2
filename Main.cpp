@@ -19,9 +19,11 @@ Matrix result_of_operation(Matrix first_obj, Matrix second_obj, const char* oper
 	help_obj = first_obj;
 	if (strcmp("add", operation) == 0) {
 		if (first_obj.get_size_x() == second_obj.get_size_x() && first_obj.get_size_y() == second_obj.get_size_y()) return help_obj + second_obj;
+		else throw E_Different_Size();
 	}
 	else if (strcmp("sub", operation) == 0) {
 		if (first_obj.get_size_x() == second_obj.get_size_x() && first_obj.get_size_y() == second_obj.get_size_y()) return help_obj - second_obj;
+		else throw E_Different_Size();
 	}
 	else if (strcmp("mul", operation) == 0) {
 		return help_obj * second_obj;
@@ -53,7 +55,6 @@ Matrix result_of_operation(Matrix first_obj, Matrix second_obj, const char* oper
 		if (choose == 2) help_obj = second_obj;
 		return help_obj.search_invers_matrix();
 	}
-	else throw E_Different_Size();
 }
 
 double** input_data(int x_size_input, int y_size_input, double** matrix_input) {
@@ -71,12 +72,16 @@ double** input_data(int x_size_input, int y_size_input, double** matrix_input) {
 int main() {
 	int x_size_input = 0, y_size_input = 0, choose = 0;
 	double input_value = 0;
-	
+
 	cout << "INPUT INFO ABOUT 1-ST MATRIX:" << endl;
-	cout << "Number of colums: ";
-	cin >> y_size_input;
-	cout << "Number of lines: ";
-	cin >> x_size_input;
+	do {
+		cout << "Number of colums: ";
+		cin >> y_size_input;
+	} while (y_size_input <= 0);
+	do {
+		cout << "Number of lines: ";
+		cin >> x_size_input;
+	} while (y_size_input <= 0);
 	double** matrix_input = new double* [x_size_input];
 	for (int i = 0; i < x_size_input; i++) {
 		matrix_input[i] = new double[y_size_input];
@@ -89,18 +94,22 @@ int main() {
 	}
 	delete[] matrix_input;
 
-	cout << "INPUT INFO ABOUT 2-ST MATRIX:" << endl;
-	cout << "Number of colums: ";
-	cin >> y_size_input;
-	cout << "Number of lines: ";
-	cin >> x_size_input;
+	cout << "INPUT INFO ABOUT 2-D MATRIX:" << endl;
+	do {
+		cout << "Number of colums: ";
+		cin >> y_size_input;
+	} while (y_size_input <= 0);
+	do {
+		cout << "Number of lines: ";
+		cin >> x_size_input;
+	} while (y_size_input <= 0);
 	matrix_input = new double* [x_size_input];
 	for (int i = 0; i < x_size_input; i++) {
 		matrix_input[i] = new double[y_size_input];
 	}
 	matrix_input = input_data(x_size_input, y_size_input, matrix_input);
 	Matrix second_obj(x_size_input, y_size_input, matrix_input);
-	
+
 	while (true) {
 		system("cls");
 		cout << "FIRST MATRIX:" << endl;
@@ -110,11 +119,11 @@ int main() {
 		cout << endl;
 		cout << "Press [Q] to perform the addition" << endl;
 		cout << "Press [W] to perform the subtraction" << endl;
-		cout << "Press [E] to perform the multiplication (matrix * matrix)" << endl;
+		cout << "Press [E] to perform the multiplication (1-st matrix * 2-d matrix)" << endl;
 		cout << "Press [R] to perform the multiplication (matrix * scalar)" << endl;
 		cout << "Press [A] to perform the division (matrix / scalar)" << endl;
 		cout << "Press [S] to calculate the trace of the matrix" << endl;
-		cout << "Press [D] to get a cell by index" << endl; 
+		cout << "Press [D] to get a cell by index" << endl;
 		cout << "Press [F] to change a cell by index" << endl;
 		cout << "Press [Z] to calculate inverted matrix" << endl;
 		cout << "Press [Esc] to exit the program" << endl;
@@ -175,7 +184,7 @@ int main() {
 				cin >> x_size_input;
 				cout << "Input Y:";
 				cin >> y_size_input;
-				if (choose == 1) cout << "Value in cell ["<< x_size_input + 1  <<"]["<< y_size_input + 1 <<"] = " << first_obj(x_size_input - 1, y_size_input - 1) << endl;
+				if (choose == 1) cout << "Value in cell [" << x_size_input + 1 << "][" << y_size_input + 1 << "] = " << first_obj(x_size_input - 1, y_size_input - 1) << endl;
 				if (choose == 2) cout << "Value in cell [" << x_size_input + 1 << "][" << y_size_input + 1 << "] = " << second_obj(x_size_input - 1, y_size_input - 1) << endl;
 			}
 			catch (Error& er) { er.print_message(); }
@@ -193,8 +202,8 @@ int main() {
 				cin >> y_size_input;
 				cout << "Input new value in cell: ";
 				cin >> input_value;
-				if (choose == 1) cout << "Value in cell [" << x_size_input + 1 << "][" << y_size_input + 1 << "] was switch on " << first_obj(x_size_input - 1, y_size_input - 1, input_value) << endl;
-				if (choose == 2) cout << "Value in cell [" << x_size_input + 1 << "][" << y_size_input + 1 << "] was switch on " << second_obj(x_size_input - 1, y_size_input - 1, input_value) << endl;
+				if (choose == 1) cout << endl << "Value in cell [" << x_size_input << "][" << y_size_input << "] was switch on " << input_value << endl << first_obj(x_size_input - 1, y_size_input - 1, input_value) << endl;
+				if (choose == 2) cout << endl << "Value in cell [" << x_size_input << "][" << y_size_input << "] was switch on " << input_value << endl << second_obj(x_size_input - 1, y_size_input - 1, input_value) << endl;
 			}
 			catch (Error& er) { er.print_message(); }
 			break;
@@ -209,7 +218,7 @@ int main() {
 			return 0;
 		}
 		system("pause");
-	
+
 	}
 
 	return 0;

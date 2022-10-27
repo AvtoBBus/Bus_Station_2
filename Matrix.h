@@ -14,8 +14,8 @@ private:
 	int calculate_determinant();
 
 public:
-	Matrix();
-	Matrix(int size_x, int size_y, double** matrix);
+	
+	Matrix(int size_x, int size_y, double** matrix); //заполнять 1-м значемнием всю матрицу
 
 	void set_size_x(int size_x);
 	void set_size_y(int size_y);
@@ -37,7 +37,7 @@ public:
 	Matrix& operator - (const Matrix& Object);
 	Matrix& operator * (const Matrix& Object);
 	Matrix& operator * (const int scalar);
-	friend Matrix& operator * (const int scalar, Matrix& Object);
+	friend Matrix& operator * (const int scalar, Matrix& Object); //доработать
 	Matrix& operator / (const int scalar);
 
 	Matrix search_invers_matrix();
