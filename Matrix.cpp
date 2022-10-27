@@ -15,10 +15,14 @@ int Matrix::calculate_determinant() {
 	return determinant;
 }
 
-Matrix::Matrix(int size_x, int size_y, double** matrix) {
+Matrix::Matrix(int size_x, int size_y, double value_to_fill) {
 	set_size_x(size_x);
 	set_size_y(size_y);
-	set_matrix(matrix);
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_x; j++) {
+			this(value_to_fill, i, j);
+		}
+	}
 }
 
 void Matrix::set_size_x(int size_x) {
@@ -32,29 +36,6 @@ int Matrix::get_size_x() const {
 }
 int Matrix::get_size_y() const {
 	return size_y;
-}
-
-int Matrix::get_value_in_cell(int index_x, int index_y) const {
-	return matrix[index_x][index_y];
-}
-
-void Matrix::set_matrix(double** matrix) {
-
-	this->matrix = new double* [size_x];
-	for (int i = 0; i < size_x; i++) {
-		this->matrix[i] = new double[size_y];
-	}
-
-	for (int i = 0; i < this->size_x; i++) {
-		for (int j = 0; j < this->size_y; j++) {
-			this->matrix[i][j] = matrix[i][j];
-		}
-	}
-}
-
-void Matrix::set_value_index(double value, int index_x, int index_y) {
-	if (index_x > size_x || index_y > size_y) throw E_Invalid_Index(index_x, index_y);
-	//&
 }
 
 void Matrix::print_matrix() {

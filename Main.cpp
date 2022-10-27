@@ -57,18 +57,6 @@ Matrix result_of_operation(Matrix first_obj, Matrix second_obj, const char* oper
 	}
 }
 
-double** input_data(int x_size_input, int y_size_input, double** matrix_input) {
-	cout << endl << "INPUT VALUES IN CELL:" << endl;
-	for (int i = 0; i < x_size_input; i++) {
-		for (int j = 0; j < y_size_input; j++) {
-			cout << "Cell [" << i + 1 << "][" << j + 1 << "] = ";
-			cin >> matrix_input[i][j];
-		}
-		cout << endl;
-	}
-	return matrix_input;
-}
-
 int main() {
 	int x_size_input = 0, y_size_input = 0, choose = 0;
 	double input_value = 0;
@@ -82,17 +70,11 @@ int main() {
 		cout << "Number of lines: ";
 		cin >> x_size_input;
 	} while (y_size_input <= 0);
-	double** matrix_input = new double* [x_size_input];
-	for (int i = 0; i < x_size_input; i++) {
-		matrix_input[i] = new double[y_size_input];
-	}
-	matrix_input = input_data(x_size_input, y_size_input, matrix_input);
-	Matrix first_obj(x_size_input, y_size_input, matrix_input);
+	
+	cout << "INPUT VALUE, WHICH FILL 1-ST MATRIX" << endl;
+	cin >> input_value;
 
-	for (int i = 0; i < x_size_input; i++) {
-		delete[] matrix_input[i];
-	}
-	delete[] matrix_input;
+	Matrix first_obj(x_size_input, y_size_input, input_value);
 
 	cout << "INPUT INFO ABOUT 2-D MATRIX:" << endl;
 	do {
@@ -103,12 +85,11 @@ int main() {
 		cout << "Number of lines: ";
 		cin >> x_size_input;
 	} while (y_size_input <= 0);
-	matrix_input = new double* [x_size_input];
-	for (int i = 0; i < x_size_input; i++) {
-		matrix_input[i] = new double[y_size_input];
-	}
-	matrix_input = input_data(x_size_input, y_size_input, matrix_input);
-	Matrix second_obj(x_size_input, y_size_input, matrix_input);
+
+	cout << "INPUT VALUE, WHICH FILL 2-D MATRIX" << endl;
+	cin >> input_value;
+
+	Matrix second_obj(x_size_input, y_size_input, input_value);
 
 	while (true) {
 		system("cls");
