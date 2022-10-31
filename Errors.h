@@ -17,11 +17,6 @@ public:
 	void print_message() const;
 };
 
-class E_No_Suitable_Size : public Error {
-public:
-	void print_message() const;
-};
-
 class E_Not_Square_Matrix : public Error {
 public:
 	void print_message() const;

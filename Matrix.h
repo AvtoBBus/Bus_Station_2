@@ -11,22 +11,17 @@ class Matrix {
 private:
 	int size_x, size_y;
 	double** matrix;
-	int calculate_determinant();
+	double calculate_determinant(int size_x, int size_y, double** matrix);
+	double calculate_minor(int index_row, int index_col);
 
 public:
 	
-	Matrix(int size_x, int size_y, double** matrix); //заполнять 1-м значемнием всю матрицу
-
+	Matrix(int size_x, int size_y, double value_to_fill); //заполнять 1-м значемнием всю матрицу
+	
 	void set_size_x(int size_x);
 	void set_size_y(int size_y);
 	int get_size_x() const;
 	int get_size_y() const;
-	int get_value_in_cell(int index_x, int index_y) const;
-	void set_matrix(double** matrix);
-
-
-	void set_value_index(double value, int index_x, int index_y);
-	void print_matrix();
 
 	int calculating_the_trace();
 
@@ -37,7 +32,7 @@ public:
 	Matrix& operator - (const Matrix& Object);
 	Matrix& operator * (const Matrix& Object);
 	Matrix& operator * (const int scalar);
-	friend Matrix& operator * (const int scalar, Matrix& Object); //доработать
+	friend Matrix& operator * (const int scalar, const Matrix& Object); //доработать
 	Matrix& operator / (const int scalar);
 
 	Matrix search_invers_matrix();

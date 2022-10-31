@@ -14,8 +14,7 @@ int get_key() {
 }
 
 Matrix result_of_operation(Matrix first_obj, Matrix second_obj, const char* operation) {
-	double** matrix = { 0 };
-	Matrix help_obj(0, 0, matrix);
+	Matrix help_obj(0, 0, 0);
 	help_obj = first_obj;
 	if (strcmp("add", operation) == 0) {
 		if (first_obj.get_size_x() == second_obj.get_size_x() && first_obj.get_size_y() == second_obj.get_size_y()) return help_obj + second_obj;
@@ -70,13 +69,13 @@ int main() {
 		cout << "Number of lines: ";
 		cin >> x_size_input;
 	} while (y_size_input <= 0);
-	
-	cout << "INPUT VALUE, WHICH FILL 1-ST MATRIX" << endl;
+
+	cout << endl << "INPUT VALUE, WHICH FILL 1-ST MATRIX" << endl;
 	cin >> input_value;
 
 	Matrix first_obj(x_size_input, y_size_input, input_value);
 
-	cout << "INPUT INFO ABOUT 2-D MATRIX:" << endl;
+	cout << endl << "INPUT INFO ABOUT 2-D MATRIX:" << endl;
 	do {
 		cout << "Number of colums: ";
 		cin >> y_size_input;
@@ -86,7 +85,7 @@ int main() {
 		cin >> x_size_input;
 	} while (y_size_input <= 0);
 
-	cout << "INPUT VALUE, WHICH FILL 2-D MATRIX" << endl;
+	cout << endl << "INPUT VALUE, WHICH FILL 2-D MATRIX" << endl;
 	cin >> input_value;
 
 	Matrix second_obj(x_size_input, y_size_input, input_value);

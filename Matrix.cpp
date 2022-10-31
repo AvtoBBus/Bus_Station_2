@@ -8,19 +8,100 @@
 
 using namespace std;
 
-int Matrix::calculate_determinant() {
-	int determinant = matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[2][1] * matrix[1][2]) -
-		matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-		matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]); 
+double Matrix::calculate_determinant(int size_x, int size_y, double** matrix) {
+	if (size_x == 2) return (matrix[0][0] * matrix[1][1]) - (matrix[1][0] * matrix[0][1]);
+	double** help_matrix;
+	help_matrix = new double* [size_x];
+	for (int i = 0; i < size_x; i++) {
+		help_matrix[i] = new double[size_y * 2 - 1];
+	}
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_y; j++) {
+			help_matrix[i][j] = matrix[i][j];
+		}
+	}
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_y - 1; j++) {
+			help_matrix[i][j + size_y] = matrix[i][j];
+		}
+	}
+
+ 	double determinant = 0, vedro = 1;
+
+	for (int j = 0; j < size_y; j++) {
+		vedro = 1;
+		for (int i = 0; i < size_x; i++) {
+			vedro *= help_matrix[i][i + j];
+		}
+		determinant += vedro;
+	}
+
+	for (int j = 0; j < size_y; j++) {
+		vedro = 1;
+		int k = j;
+		for (int i = size_x - 1; i != -1; i--) {
+			vedro *= help_matrix[i][k];
+			k++;
+		}
+		determinant -= vedro;
+	}
+
 	return determinant;
+}
+
+double Matrix::calculate_minor(int index_row, int index_col) {
+	double** help_matrix;
+
+	help_matrix = new double* [size_x];
+	for (int i = 0; i < size_x; i++) {
+		help_matrix[i] = new double[size_y];
+	}
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_y; j++) {
+			help_matrix[i][j] = matrix[i][j];
+		}
+	}
+
+	for (int i = 0; i < size_y; i++) {
+		help_matrix[index_row][i] = INT_MAX;
+	}
+
+	for (int i = 0; i < size_x; i++) {
+		help_matrix[i][index_col] = INT_MAX;
+	}
+
+	double** minor;
+	minor = new double* [size_x - 1];
+	for (int i = 0; i < size_x - 1; i++) {
+		minor[i] = new double[size_y - 1];
+	}
+
+	int x = 0, y = 0;
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_y; j++) {
+			if (help_matrix[i][j] != INT_MAX) {
+				int puk = help_matrix[i][j];
+				minor[x][y] = help_matrix[i][j];
+				if (y != size_y - 2) y++;
+				else {
+					x++; y = 0;
+				}
+			}
+		}
+	}
+	return calculate_determinant(get_size_x() - 1, get_size_y() - 1, minor);
 }
 
 Matrix::Matrix(int size_x, int size_y, double value_to_fill) {
 	set_size_x(size_x);
 	set_size_y(size_y);
+	matrix = new double* [size_x];
 	for (int i = 0; i < size_x; i++) {
-		for (int j = 0; j < size_x; j++) {
-			this(value_to_fill, i, j);
+		matrix[i] = new double[size_y];
+	}
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_y; j++) {
+			matrix[i][j] = value_to_fill;
 		}
 	}
 }
@@ -36,17 +117,6 @@ int Matrix::get_size_x() const {
 }
 int Matrix::get_size_y() const {
 	return size_y;
-}
-
-void Matrix::print_matrix() {
-	cout << endl;
-	for (int i = 0; i < size_x; i++) {
-		for (int j = 0; j < size_y; j++) {
-			cout << "\t" << matrix[i][j] << "\t";
-		}
-		cout << endl;
-	}
-	cout << endl;
 }
 
 int Matrix::calculating_the_trace() {
@@ -168,8 +238,9 @@ Matrix& Matrix::operator * (const int scalar) {
 	}
 	return *this;
 }
-Matrix& operator * (const int scalar, Matrix& Object) {
-	return Object * scalar;
+Matrix& operator * (const int scalar, const Matrix& Object) {
+	Matrix help_obj = Object;
+	return help_obj * scalar;
 }
 Matrix& Matrix::operator / (const int scalar) {
 	if (scalar == 0) throw E_Divizion_By_Zero();
@@ -182,31 +253,23 @@ Matrix& Matrix::operator / (const int scalar) {
 }
 
 Matrix Matrix::search_invers_matrix() {
-	if (size_x != 3 || size_y != 3) throw E_No_Suitable_Size();
-	double inverted_determinant = calculate_determinant();
+	double inverted_determinant = calculate_determinant(get_size_x(), get_size_y(), matrix);
 	if (inverted_determinant == 0) throw E_Determinant_Is_Zero();
 	inverted_determinant = 1 / inverted_determinant;
-	double** matrix = new double* [3];
-	for (int i = 0; i < 3; i++) {
-		matrix[i] = new double[3];
-	}
-	Matrix new_obj(3, 3, matrix);
-	new_obj.matrix[0][0] = (this->matrix[1][1] * this->matrix[2][2] - this->matrix[2][1] * this->matrix[1][2]) * inverted_determinant;
-	new_obj.matrix[0][1] = (this->matrix[0][2] * this->matrix[2][1] - this->matrix[0][1] * this->matrix[2][2]) * inverted_determinant;
-	new_obj.matrix[0][2] = (this->matrix[0][1] * this->matrix[1][2] - this->matrix[0][2] * this->matrix[1][1]) * inverted_determinant;
-	new_obj.matrix[1][0] = (this->matrix[1][2] * this->matrix[2][0] - this->matrix[1][0] * this->matrix[2][2]) * inverted_determinant;
-	new_obj.matrix[1][1] = (this->matrix[0][0] * this->matrix[2][2] - this->matrix[0][2] * this->matrix[2][0]) * inverted_determinant;
-	new_obj.matrix[1][2] = (this->matrix[1][0] * this->matrix[0][2] - this->matrix[0][0] * this->matrix[1][2]) * inverted_determinant;
-	new_obj.matrix[2][0] = (this->matrix[1][0] * this->matrix[2][1] - this->matrix[2][0] * this->matrix[1][1]) * inverted_determinant;
-	new_obj.matrix[2][1] = (this->matrix[2][0] * this->matrix[0][1] - this->matrix[0][0] * this->matrix[2][1]) * inverted_determinant;
-	new_obj.matrix[2][2] = (this->matrix[0][0] * this->matrix[1][1] - this->matrix[1][0] * this->matrix[0][1]) * inverted_determinant;
+	Matrix new_obj(3, 3, 0);
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_x; j++) {
+			new_obj.matrix[j][i] = calculate_minor(i, j) * inverted_determinant;
+		}
+	} 
 	return new_obj;
 }
 
 ostream& operator << (ostream& os, const Matrix& object) {
+	Matrix mat = object;
 	for (int i = 0; i < object.get_size_x(); i++) {
 		for (int j = 0; j < object.get_size_y(); j++) {
-			os << "\t" << object.get_value_in_cell(i, j);
+			os << "\t" << mat(i, j);
 		}
 		cout << endl;
 	}
