@@ -3,17 +3,20 @@
 #include <conio.h>
 #include <iostream>
 #include <string>
+#include <complex>
 #include "Matrix.h"
 #include "Errors.h"
 
 using namespace std;
 
-double Matrix::calculate_determinant(int size_x, int size_y, double** matrix) {
+template <class T>
+T Matrix<T>::calculate_determinant(int size_x, int size_y, T** matrix) {
+	if (size_x == 1) return matrix[0][0];
 	if (size_x == 2) return (matrix[0][0] * matrix[1][1]) - (matrix[1][0] * matrix[0][1]);
-	double** help_matrix;
-	help_matrix = new double* [size_x];
+	T** help_matrix;
+	help_matrix = (T**) new T* [size_x];
 	for (int i = 0; i < size_x; i++) {
-		help_matrix[i] = new double[size_y * 2 - 1];
+		help_matrix[i] = (T*) new T[size_y * 2 - 1];
 	}
 	for (int i = 0; i < size_x; i++) {
 		for (int j = 0; j < size_y; j++) {
@@ -26,7 +29,7 @@ double Matrix::calculate_determinant(int size_x, int size_y, double** matrix) {
 		}
 	}
 
- 	double determinant = 0, vedro = 1;
+	T determinant = 0, vedro = 1;
 
 	for (int j = 0; j < size_y; j++) {
 		vedro = 1;
@@ -49,12 +52,13 @@ double Matrix::calculate_determinant(int size_x, int size_y, double** matrix) {
 	return determinant;
 }
 
-double Matrix::calculate_minor(int index_row, int index_col) {
-	double** help_matrix;
+template <class T>
+T Matrix<T>::calculate_minor(int index_row, int index_col) {
+	T** help_matrix;
 
-	help_matrix = new double* [size_x];
+	help_matrix = (T**) new T* [size_x];
 	for (int i = 0; i < size_x; i++) {
-		help_matrix[i] = new double[size_y];
+		help_matrix[i] = (T*) new T[size_y];
 	}
 	for (int i = 0; i < size_x; i++) {
 		for (int j = 0; j < size_y; j++) {
@@ -70,17 +74,16 @@ double Matrix::calculate_minor(int index_row, int index_col) {
 		help_matrix[i][index_col] = INT_MAX;
 	}
 
-	double** minor;
-	minor = new double* [size_x - 1];
+	T** minor;
+	minor = new T* [size_x - 1];
 	for (int i = 0; i < size_x - 1; i++) {
-		minor[i] = new double[size_y - 1];
+		minor[i] = new T[size_y - 1];
 	}
 
 	int x = 0, y = 0;
 	for (int i = 0; i < size_x; i++) {
 		for (int j = 0; j < size_y; j++) {
-			if (help_matrix[i][j] != INT_MAX) {
-				int puk = help_matrix[i][j];
+			if (help_matrix[i][j] != (T)INT_MAX) {
 				minor[x][y] = help_matrix[i][j];
 				if (y != size_y - 2) y++;
 				else {
@@ -92,12 +95,13 @@ double Matrix::calculate_minor(int index_row, int index_col) {
 	return calculate_determinant(get_size_x() - 1, get_size_y() - 1, minor);
 }
 
-Matrix::Matrix(int size_x, int size_y, double value_to_fill) {
+template <class T>
+Matrix<T>::Matrix(int size_x, int size_y, T value_to_fill) {
 	set_size_x(size_x);
 	set_size_y(size_y);
-	matrix = new double* [size_x];
+	matrix = (T**) new T* [size_x];
 	for (int i = 0; i < size_x; i++) {
-		matrix[i] = new double[size_y];
+		matrix[i] = (T*) new T[size_y];
 	}
 	for (int i = 0; i < size_x; i++) {
 		for (int j = 0; j < size_y; j++) {
@@ -106,21 +110,29 @@ Matrix::Matrix(int size_x, int size_y, double value_to_fill) {
 	}
 }
 
-void Matrix::set_size_x(int size_x) {
+template <class T>
+void Matrix<T>::set_size_x(int size_x) {
 	this->size_x = size_x;
 }
-void Matrix::set_size_y(int size_y) {
+
+template <class T>
+void Matrix<T>::set_size_y(int size_y) {
 	this->size_y = size_y;
 }
-int Matrix::get_size_x() const {
+
+template <class T>
+int Matrix<T>::get_size_x() const {
 	return size_x;
 }
-int Matrix::get_size_y() const {
+
+template <class T>
+int Matrix<T>::get_size_y() const {
 	return size_y;
 }
 
-int Matrix::calculating_the_trace() {
-	int trace = 0;
+template <class T>
+T Matrix<T>::calculating_the_trace() {
+	T trace = 0;
 	if (size_x != size_y) throw E_Not_Square_Matrix();
 	for (int i = 0; i < size_x; i++) {
 		trace += matrix[i][i];
@@ -128,32 +140,49 @@ int Matrix::calculating_the_trace() {
 	return trace;
 }
 
-double Matrix::operator () (int index_x, int index_y) {
+template <class T>
+T& Matrix<T>::operator () (int index_x, int index_y) {
 	if (index_x >= this->get_size_x() || index_y >= this->get_size_y()) throw E_Invalid_Index(index_x, index_y);
 	return this->matrix[index_x][index_y];
 }
-Matrix& Matrix::operator () (int index_x, int index_y, int new_value) {
+
+template <class T>
+Matrix<T>& Matrix<T>::operator () (int index_x, int index_y, T new_value) {
 	if (index_x >= this->get_size_x() || index_y >= this->get_size_y()) throw E_Invalid_Index(index_x, index_y);
 	this->matrix[index_x][index_y] = new_value;
 	return *this;
 }
-Matrix& Matrix::operator = (const Matrix& object) {
-	this->size_x = object.size_x;
-	this->size_y = object.size_y;
 
-	this->matrix = new double* [size_x];
-	for (int i = 0; i < size_x; i++) {
-		this->matrix[i] = new double[size_y];
+template <class T>
+Matrix<T>& Matrix<T>::operator = (const Matrix<T>& object) {
+	if (this == (&object)) {
+		return *this;
 	}
-
-	for (int i = 0; i < size_x; i++) {
-		for (int j = 0; j < size_y; j++) {
+	if (size_x < object.size_x)	{
+		if (matrix != NULL) {
+			for (int i = 0; i < this->size_x; i++) {
+				delete[] this->matrix[i];
+			}
+			delete[] this->matrix;
+		}
+		matrix = NULL;
+		matrix = new T* [object.size_x];
+		for (int i = 0; i < object.size_x; i++) {
+			matrix[i] = new T[object.size_y];
+		}
+	}
+	for (int i = 0; i < object.size_x; i++) {
+		for (int j = 0; j < object.size_y; j++) {
 			this->matrix[i][j] = object.matrix[i][j];
 		}
 	}
+	size_x = object.size_x;
+	size_y = object.size_y;
 	return *this;
 }
-Matrix& Matrix::operator + (const Matrix& Object) {
+
+template <class T>
+Matrix<T>& Matrix<T>::operator + (const Matrix<T>& Object) {
 	if (this->size_x != Object.size_x || this->size_y != Object.size_y) throw E_Different_Size();
 	for (int i = 0; i < this->size_x; i++) {
 		for (int j = 0; j < size_y; j++) {
@@ -162,7 +191,9 @@ Matrix& Matrix::operator + (const Matrix& Object) {
 	}
 	return *this;
 }
-Matrix& Matrix::operator - (const Matrix& Object) {
+
+template <class T>
+Matrix<T>& Matrix<T>::operator - (const Matrix<T>& Object) {
 	if (this->size_x != Object.size_x || this->size_y != Object.size_y) throw E_Different_Size();
 	for (int i = 0; i < this->size_x; i++) {
 		for (int j = 0; j < size_y; j++) {
@@ -171,14 +202,16 @@ Matrix& Matrix::operator - (const Matrix& Object) {
 	}
 	return *this;
 }
-Matrix& Matrix::operator * (const Matrix& Object) {
+
+template <class T>
+Matrix<T>& Matrix<T>::operator * (const Matrix<T>& Object) {
 	if (this->size_x != Object.size_y || this->size_y != Object.size_x) throw E_Different_Size();
-	double** First_Matrix{}, ** Second_Matrix{}, ** Result_Matrix{};
+	T** First_Matrix{}, ** Second_Matrix{}, ** Result_Matrix{};
 	int First_size_x = this->size_x, First_size_y = this->size_y,
 		Second_size_x = Object.size_x, Second_size_y = Object.size_y;
-	First_Matrix = new double* [size_x];
+	First_Matrix = new T* [size_x];
 	for (int i = 0; i < size_x; i++) {
-		First_Matrix[i] = new double[size_y];
+		First_Matrix[i] = new T[size_y];
 	}
 	for (int i = 0; i < size_x; i++) {
 		for (int j = 0; j < size_y; j++) {
@@ -186,9 +219,9 @@ Matrix& Matrix::operator * (const Matrix& Object) {
 		}
 	}
 
-	Second_Matrix = new double* [Object.size_x];
+	Second_Matrix = new T* [Object.size_x];
 	for (int i = 0; i < Object.size_x; i++) {
-		Second_Matrix[i] = new double[Object.size_y];
+		Second_Matrix[i] = new T[Object.size_y];
 	}
 	for (int i = 0; i < Object.size_x; i++) {
 		for (int j = 0; j < Object.size_y; j++) {
@@ -196,9 +229,9 @@ Matrix& Matrix::operator * (const Matrix& Object) {
 		}
 	}
 
-	Result_Matrix = new double* [First_size_x];
+	Result_Matrix = new T* [First_size_x];
 	for (int i = 0; i < First_size_x; i++) {
-		Result_Matrix[i] = new double[Second_size_y];
+		Result_Matrix[i] = new T[Second_size_y];
 	}
 
 	for (int row = 0; row < First_size_x; row++) {
@@ -215,9 +248,9 @@ Matrix& Matrix::operator * (const Matrix& Object) {
 	}
 	delete[] this->matrix;
 
-	this->matrix = new double* [First_size_x];
+	this->matrix = new T* [First_size_x];
 	for (int i = 0; i < First_size_x; i++) {
-		this->matrix[i] = new double[Second_size_y];
+		this->matrix[i] = new T[Second_size_y];
 	}
 
 	this->size_x = First_size_x;
@@ -230,7 +263,9 @@ Matrix& Matrix::operator * (const Matrix& Object) {
 	}
 	return *this;
 }
-Matrix& Matrix::operator * (const int scalar) {
+
+template <class T>
+Matrix<T>& Matrix<T>::operator * (const T scalar) {
 	for (int i = 0; i < this->size_x; i++) {
 		for (int j = 0; j < this->size_x; j++) {
 			this->matrix[i][j] *= scalar;
@@ -238,12 +273,16 @@ Matrix& Matrix::operator * (const int scalar) {
 	}
 	return *this;
 }
-Matrix& operator * (const int scalar, const Matrix& Object) {
+
+template <class T>
+Matrix<T>& operator * (const T scalar, const Matrix<T>& Object) {
 	Matrix help_obj = Object;
 	return help_obj * scalar;
 }
-Matrix& Matrix::operator / (const int scalar) {
-	if (scalar == 0) throw E_Divizion_By_Zero();
+
+template <class T>
+Matrix<T>& Matrix<T>::operator / (const T scalar) {
+	if (scalar == (T)0) throw E_Divizion_By_Zero();
 	for (int i = 0; i < this->size_x; i++) {
 		for (int j = 0; j < this->size_y; j++) {
 			this->matrix[i][j] /= scalar;
@@ -252,11 +291,13 @@ Matrix& Matrix::operator / (const int scalar) {
 	return *this;
 }
 
-Matrix Matrix::search_invers_matrix() {
-	double inverted_determinant = calculate_determinant(get_size_x(), get_size_y(), matrix);
-	if (inverted_determinant == 0) throw E_Determinant_Is_Zero();
-	inverted_determinant = 1 / inverted_determinant;
-	Matrix new_obj(3, 3, 0);
+
+template <class T>
+Matrix<T> Matrix<T>::search_invers_matrix() {
+	T inverted_determinant = calculate_determinant(get_size_x(), get_size_y(), matrix);
+	if (inverted_determinant == (T)0) throw E_Determinant_Is_Zero();
+	inverted_determinant = (T)1 / inverted_determinant;
+	Matrix<T> new_obj(size_x, size_y, 0);
 	for (int i = 0; i < size_x; i++) {
 		for (int j = 0; j < size_x; j++) {
 			new_obj.matrix[j][i] = calculate_minor(i, j) * inverted_determinant;
@@ -265,13 +306,10 @@ Matrix Matrix::search_invers_matrix() {
 	return new_obj;
 }
 
-ostream& operator << (ostream& os, const Matrix& object) {
-	Matrix mat = object;
-	for (int i = 0; i < object.get_size_x(); i++) {
-		for (int j = 0; j < object.get_size_y(); j++) {
-			os << "\t" << mat(i, j);
-		}
-		cout << endl;
-	}
-	return os;
-}
+//ostream& operator << (ostream& os, const Matrix<T>& object) 
+
+template class Matrix<int>;
+template class Matrix<float>;
+template class Matrix<double>;
+template class Matrix<complex<float>>;
+template class Matrix<complex<double>>;

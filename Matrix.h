@@ -7,35 +7,46 @@
 
 using namespace std;
 
+template <class T>
 class Matrix {
 private:
 	int size_x, size_y;
-	double** matrix;
-	double calculate_determinant(int size_x, int size_y, double** matrix);
-	double calculate_minor(int index_row, int index_col);
+	T** matrix;
+	T calculate_determinant(int size_x, int size_y, T** matrix);
+	T calculate_minor(int index_row, int index_col);
 
 public:
 	
-	Matrix(int size_x, int size_y, double value_to_fill); //заполнять 1-м значемнием всю матрицу
+	Matrix(int size_x, int size_y, T value_to_fill);
 	
 	void set_size_x(int size_x);
 	void set_size_y(int size_y);
 	int get_size_x() const;
 	int get_size_y() const;
 
-	int calculating_the_trace();
+	T calculating_the_trace();
 
-	double operator () (int index_x, int index_y);
-	Matrix& operator () (int index_x, int index_y, int new_value);
+	T& operator () (int index_x, int index_y);
+	Matrix& operator () (int index_x, int index_y, T new_value);
 	Matrix& operator = (const Matrix& object);
 	Matrix& operator + (const Matrix& Object);
 	Matrix& operator - (const Matrix& Object);
 	Matrix& operator * (const Matrix& Object);
-	Matrix& operator * (const int scalar);
-	friend Matrix& operator * (const int scalar, const Matrix& Object); //доработать
-	Matrix& operator / (const int scalar);
+	Matrix& operator * (const T scalar);
+	friend Matrix& operator * (const T scalar, const Matrix& Object);
+	Matrix& operator / (const T scalar);
 
 	Matrix search_invers_matrix();
 
-	friend ostream& operator << (ostream& os, const Matrix& object);
+	friend ostream& operator << (ostream& os, const Matrix& object)
+	{
+		Matrix mat = object;
+		for (int i = 0; i < object.get_size_x(); i++) {
+			for (int j = 0; j < object.get_size_y(); j++) {
+				os << "\t" << mat(i, j);
+			}
+			cout << endl;
+		}
+		return os;
+	}
 };
