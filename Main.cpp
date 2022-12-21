@@ -9,6 +9,17 @@
 
 using namespace std;
 
+template <class T>
+T check_input() {
+	T number;
+	while (!(cin >> number) || (cin.peek() != '\n')) {
+		cin.clear();
+		while (cin.get() != '\n');
+		cout << "Error" << endl;
+	}
+	return number;
+}
+
 int get_key() {
 	int key = _getch();
 	return key;
@@ -46,7 +57,7 @@ Matrix<T> result_of_operation(Matrix<T> first_obj, Matrix<T> second_obj, const c
 		else throw E_Different_Size();
 	}
 	else if (strcmp("mul", operation) == 0) {
-		return help_obj * second_obj;
+		return help_obj;// * second_obj;
 	}
 	else if (strcmp("mul_scalar", operation) == 0) {
 		T scalar = 0;
@@ -79,7 +90,7 @@ Matrix<T> result_of_operation(Matrix<T> first_obj, Matrix<T> second_obj, const c
 			choose = check_and_input();
 		} while (choose < 1 || choose > 2);
 		if (choose == 2) help_obj = second_obj;
-		return help_obj.search_invers_matrix();
+		return help_obj;// .search_invers_matrix();
 	}
 	return help_obj;
 }
@@ -104,7 +115,7 @@ void menu_interaction(Matrix<T> first_obj, Matrix<T> second_obj) {
 		cout << "Press [D] to get a cell by index" << endl;
 		cout << "Press [F] to change a cell by index" << endl;
 		cout << "Press [Z] to calculate inverted matrix" << endl;
-		cout << "Press [Esc] to exit the program" << endl;
+		cout << "Press [Esc] to go back" << endl;
 		int key = get_key();
 		switch (key) {
 		case 113: //q
@@ -179,7 +190,7 @@ void menu_interaction(Matrix<T> first_obj, Matrix<T> second_obj) {
 				cout << "Input Y:";
 				cin >> y_size_input;
 				cout << "Input new value in cell: ";
-				cin >> input_value;
+				input_value = check_input<T>();
 				if (choose == 1) cout << endl << "Value in cell [" << x_size_input << "][" << y_size_input << "] was switch on " << input_value << endl << first_obj(x_size_input - 1, y_size_input - 1, input_value) << endl;
 				if (choose == 2) cout << endl << "Value in cell [" << x_size_input << "][" << y_size_input << "] was switch on " << input_value << endl << second_obj(x_size_input - 1, y_size_input - 1, input_value) << endl;
 			}
@@ -234,47 +245,6 @@ int second_menu() {
 	return 0;
 }
 
-template <class T>
-int second_menu_complex() {
-	system("cls");
-	int x_size_input = 0, y_size_input = 0;
-	T input_value_integer, input_value_imaginary;
-	cout << "INPUT INFO ABOUT 1-ST MATRIX:" << endl;
-	cout << "Number of colums: ";
-	y_size_input = check_and_input();
-	cout << "Number of lines: ";
-	x_size_input = check_and_input();
-
-	char input[256];
-	cout << endl << "INPUT VALUE, WHICH FILL 1-ST MATRIX" << endl;
-	cout << endl << "INPUT INTEGER PART" << endl;
-	cin >> input;
-	input_value_integer = stoi(input);
-	cout << endl << "INPUT IMAGINARY PART" << endl;
-	cin >> input;
-	input_value_imaginary = stoi(input);
-
-	Matrix<T> first_obj(x_size_input, y_size_input, (input_value_integer, input_value_imaginary));
-
-	cout << "INPUT INFO ABOUT 2-D MATRIX:" << endl;
-	cout << "Number of colums: ";
-	y_size_input = check_and_input();
-	cout << "Number of lines: ";
-	x_size_input = check_and_input();
-
-	cout << endl << "INPUT VALUE, WHICH FILL 2-D MATRIX" << endl;
-	cout << endl << "INPUT INTEGER PART" << endl;
-	cin >> input;
-	input_value_integer = stoi(input);
-	cout << endl << "INPUT IMAGINARY PART" << endl;
-	cin >> input;
-	input_value_imaginary = stoi(input);
-
-	Matrix<T> second_obj(x_size_input, y_size_input, (input_value_integer, input_value_imaginary));
-	menu_interaction(first_obj, second_obj);
-	return 0;
-}
-
 int main() {
 	do {
 		system("cls");
@@ -287,19 +257,19 @@ int main() {
 		int key = get_key();
 		switch (key) {
 		case 113:
-			if (!second_menu<int>()) return 0;
+			second_menu<int>();
 			break;
 		case 119:
-			if (!second_menu<float>()) return 0;
+			second_menu<float>();
 			break;
 		case 101:
-			if (!second_menu<double>()) return 0;
+			second_menu<double>();
 			break;
 		case 97:
-			if (!second_menu_complex<std::complex<float>>()) return 0;
+			second_menu<std::complex<float>>();
 			break;
 		case 115:
-			if (!second_menu_complex<std::complex<double>>()) return 0;
+			second_menu<std::complex<double>>();
 			break;
 		case 27:
 			return 0;

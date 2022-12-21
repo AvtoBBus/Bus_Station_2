@@ -4,6 +4,7 @@
 #include <conio.h>
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -11,14 +12,21 @@ template <class T>
 class Matrix {
 private:
 	int size_x, size_y;
-	T** matrix;
-	T calculate_determinant(int size_x, int size_y, T** matrix);
+	vector<vector <T>> matrix;
+	T calculate_determinant(int size_x, int size_y, vector <vector<T>> matrix);
 	T calculate_minor(int index_row, int index_col);
 
 public:
 	
+	auto begin() { return matrix.begin(); }
+	auto end() { return matrix.end(); }
+	auto cbegin() const { return matrix.cbegin(); }
+	auto cend() const { return matrix.cend(); }
+
+	Matrix() = default;
 	Matrix(int size_x, int size_y, T value_to_fill);
-	
+	~Matrix() = default;
+
 	void set_size_x(int size_x);
 	void set_size_y(int size_y);
 	int get_size_x() const;
@@ -28,7 +36,7 @@ public:
 
 	T& operator () (int index_x, int index_y);
 	Matrix& operator () (int index_x, int index_y, T new_value);
-	Matrix& operator = (const Matrix& object);
+	Matrix& operator = (const Matrix& Object);
 	Matrix& operator + (const Matrix& Object);
 	Matrix& operator - (const Matrix& Object);
 	Matrix& operator * (const Matrix& Object);
