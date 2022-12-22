@@ -53,62 +53,38 @@ T Matrix<T>::calculate_determinant(int size_x, int size_y, vector <vector<T>> ma
 	return determinant;
 }
 
-//template <class T>
-//T Matrix<T>::calculate_minor(int index_row, int index_col) {
-//	vector <vector<T>> help_matrix;
-//
-//	help_matrix = vector <vector<T>> new vector<T>[size_x];
-//	for (int i = 0; i < size_x; i++) {
-//		help_matrix[i] = (T*) new T[size_y];
-//	}
-//	for (int i = 0; i < size_x; i++) {
-//		for (int j = 0; j < size_y; j++) {
-//			help_matrix[i][j] = matrix[i][j];
-//		}
-//	}
-//
-//	for (int i = 0; i < size_y; i++) {
-//		help_matrix[index_row][i] = INT_MAX;
-//	}
-//
-//	for (int i = 0; i < size_x; i++) {
-//		help_matrix[i][index_col] = INT_MAX;
-//	}
-//
-//	T** minor;
-//	minor = new T* [size_x - 1];
-//	for (int i = 0; i < size_x - 1; i++) {
-//		minor[i] = new T[size_y - 1];
-//	}
-//
-//	int x = 0, y = 0;
-//	for (int i = 0; i < size_x; i++) {
-//		for (int j = 0; j < size_y; j++) {
-//			if (help_matrix[i][j] != (T)INT_MAX) {
-//				minor[x][y] = help_matrix[i][j];
-//				if (y != size_y - 2) y++;
-//				else {
-//					x++; y = 0;
-//				}
-//			}
-//		}
-//	}
-//	return calculate_determinant(get_size_x() - 1, get_size_y() - 1, minor);
-//}
+template <class T>
+T Matrix<T>::calculate_minor(int index_row, int index_col) {
+	vector <vector<T>> help_matrix;
+	for (int i = 0; i < size_y; i++) {
+		help_matrix[index_row][i] = INT_MAX;
+	}
+
+	for (int i = 0; i < size_x; i++) {
+		help_matrix[i][index_col] = INT_MAX;
+	}
+
+	vector <vector<T>>  minor;
+
+	int x = 0, y = 0;
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_y; j++) {
+			if (help_matrix[i][j] != (T)INT_MAX) {
+				minor[x][y] = help_matrix[i][j];
+				if (y != size_y - 2) y++;
+				else {
+					x++; y = 0;
+				}
+			}
+		}
+	}
+	return calculate_determinant(get_size_x() - 1, get_size_y() - 1, minor);
+}
 
 template <class T>
 Matrix<T>::Matrix(int size_x, int size_y, T value_to_fill) {
 	set_size_x(size_x);
 	set_size_y(size_y);
-	/*matrix = (T**) new T* [size_x];
-	for (int i = 0; i < size_x; i++) {
-		matrix[i] = (T*) new T[size_y];
-	}
-	for (int i = 0; i < size_x; i++) {
-		for (int j = 0; j < size_y; j++) {
-			matrix[i][j] = value_to_fill;
-		}
-	}*/
 	vector <vector <T>> new_matrix(size_x, vector<T> (size_y, value_to_fill));
 	matrix = new_matrix;
 }
@@ -197,34 +173,17 @@ Matrix<T>& Matrix<T>::operator () (int index_x, int index_y, T new_value) {
 //}
 
 template <class T>
-Matrix<T>& Matrix<T>:: operator = (const Matrix& Object) {
-	size_x = Object.size_x;
-	size_y = Object.size_y;
-
-	auto obj_iter = Object.cbegin();
-	for (auto iter = begin(); iter != end(); ++iter) {
-		auto obj_it = obj_iter->begin();
-		for (auto it = iter->begin(); it != iter->end(); ++it) {
-			(*it) = (*obj_it);
-			++obj_it;
-		}
-		++obj_iter;
-	}
-	return *this;
-}
-
-template <class T>
 Matrix<T>& Matrix<T>::operator + (const Matrix<T>& Object) {
 	if (this->size_x != Object.size_x || this->size_y != Object.size_y) throw E_Different_Size();
 	
 	auto obj_iter = Object.cbegin();
-	for (auto iter = begin(); iter != end(); ++iter) {
+	for (auto iter = begin(); iter != end(); iter++) {
 		auto obj_it = obj_iter->begin();
-		for (auto it = iter->begin(); it != iter->end(); ++it) {
-			(*it) = (*it) + (*obj_it);
-			++obj_it;
+		for (auto it = iter->begin(); it != iter->end(); it++) {
+			(*it) += (*obj_it);
+			obj_it++;
 		}
-		++obj_iter;
+		obj_iter++;
 	}
 	return *this;
 }
@@ -232,73 +191,34 @@ Matrix<T>& Matrix<T>::operator + (const Matrix<T>& Object) {
 template <class T>
 Matrix<T>& Matrix<T>::operator - (const Matrix<T>& Object) {
 	if (this->size_x != Object.size_x || this->size_y != Object.size_y) throw E_Different_Size();
-	for (int i = 0; i < this->size_x; i++) {
-		for (int j = 0; j < size_y; j++) {
-			this->matrix[i][j] -= Object.matrix[i][j];
+	auto obj_iter = Object.cbegin();
+	for (auto iter = begin(); iter != end(); iter++) {
+		auto obj_it = obj_iter->begin();
+		for (auto it = iter->begin(); it != iter->end(); it++) {
+			(*it) += (*obj_it);
+			obj_it++;
 		}
+		obj_iter++;
 	}
 	return *this;
 }
 
-//Matrix<T>& Matrix<T>::operator * (const Matrix<T>& Object) {
-//	if (this->size_x != Object.size_y || this->size_y != Object.size_x) throw E_Different_Size();
-//	T** First_Matrix{}, ** Second_Matrix{}, ** Result_Matrix{};
-//	int First_size_x = this->size_x, First_size_y = this->size_y,
-//		Second_size_x = Object.size_x, Second_size_y = Object.size_y;
-//	First_Matrix = new T* [size_x];
-//	for (int i = 0; i < size_x; i++) {
-//		First_Matrix[i] = new T[size_y];
-//	}
-//	for (int i = 0; i < size_x; i++) {
-//		for (int j = 0; j < size_y; j++) {
-//			First_Matrix[i][j] = this->matrix[i][j];
-//		}
-//	}
-//
-//	Second_Matrix = new T* [Object.size_x];
-//	for (int i = 0; i < Object.size_x; i++) {
-//		Second_Matrix[i] = new T[Object.size_y];
-//	}
-//	for (int i = 0; i < Object.size_x; i++) {
-//		for (int j = 0; j < Object.size_y; j++) {
-//			Second_Matrix[i][j] = Object.matrix[i][j];
-//		}
-//	}
-//
-//	Result_Matrix = new T* [First_size_x];
-//	for (int i = 0; i < First_size_x; i++) {
-//		Result_Matrix[i] = new T[Second_size_y];
-//	}
-//
-//	for (int row = 0; row < First_size_x; row++) {
-//		for (int col = 0; col < Second_size_y; col++) {
-//			Result_Matrix[row][col] = 0;
-//			for (int inner = 0; inner < First_size_y; inner++) {
-//				Result_Matrix[row][col] += First_Matrix[row][inner] * Second_Matrix[inner][col];
-//			}
-//		}
-//	}
-//
-//	for (int i = 0; i < this->size_x; i++) {
-//		delete[] this->matrix[i];
-//	}
-//	delete[] this->matrix;
-//
-//	this->matrix = new T* [First_size_x];
-//	for (int i = 0; i < First_size_x; i++) {
-//		this->matrix[i] = new T[Second_size_y];
-//	}
-//
-//	this->size_x = First_size_x;
-//	this->size_y = Second_size_y;
-//
-//	for (int i = 0; i < First_size_x; i++) {
-//		for (int j = 0; j < Second_size_y; j++) {
-//			this->matrix[i][j] = Result_Matrix[i][j];
-//		}
-//	}
-//	return *this;
-//}
+template <class T>
+Matrix<T>& Matrix<T>::operator * (const Matrix<T>& Object) {
+	if (this->size_x != Object.size_y || this->size_y != Object.size_x) throw E_Different_Size();	
+	
+	Matrix<T> Result_Matrix(this->get_size_x(), Object.get_size_y(), (T)0);
+
+	for (int i = 0; i < this->size_x; ++i) {
+		for (int j = 0; j < this->size_y; ++j) {
+			for (int k = 0; k < this->size_x; ++k) {
+				Result_Matrix.matrix.at(i).at(j) += Result_Matrix.matrix.at(i).at(k) * Object.matrix.at(k).at(j);
+			}
+		}
+	}
+
+	return Result_Matrix;
+}
 
 template <class T>
 Matrix<T>& Matrix<T>::operator * (const T scalar) {
@@ -319,28 +239,29 @@ Matrix<T>& operator * (const T scalar, const Matrix<T>& Object) {
 template <class T>
 Matrix<T>& Matrix<T>::operator / (const T scalar) {
 	if (scalar == (T)0) throw E_Divizion_By_Zero();
-	for (int i = 0; i < this->size_x; i++) {
-		for (int j = 0; j < this->size_y; j++) {
-			this->matrix[i][j] /= scalar;
+	for (auto iter = begin(); iter != this->end(); ++iter) {
+		for (auto it = iter->begin(); it != iter->end(); ++it) {
+			(*it) = (*it) / scalar;
 		}
 	}
 	return *this;
 }
 
 
-//template <class T>
-//Matrix<T> Matrix<T>::search_invers_matrix() {
-//	T inverted_determinant = calculate_determinant(get_size_x(), get_size_y(), matrix);
-//	if (inverted_determinant == (T)0) throw E_Determinant_Is_Zero();
-//	inverted_determinant = (T)1 / inverted_determinant;
-//	Matrix<T> new_obj(size_x, size_y, 0);
-//	for (int i = 0; i < size_x; i++) {
-//		for (int j = 0; j < size_x; j++) {
-//			new_obj.matrix[j][i] = calculate_minor(i, j) * inverted_determinant;
-//		}
-//	} 
-//	return new_obj;
-//}
+template <class T>
+Matrix<T> Matrix<T>::search_invers_matrix() {
+	T inverted_determinant = calculate_determinant(get_size_x(), get_size_y(), matrix);
+	if (inverted_determinant == (T)0) throw E_Determinant_Is_Zero();
+	inverted_determinant = (T)1 / inverted_determinant;
+	Matrix<T> new_obj;
+	for (int i = 0; i < this->size_x; ++i) {
+		for (int j = 0; j < this->size_y; ++j) {
+			new_obj.matrix.at(i).at(j) += calculate_minor(i, j) * inverted_determinant;
+		}
+	}
+
+	return new_obj;
+}
 
 
 template class Matrix<int>;

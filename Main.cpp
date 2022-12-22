@@ -46,10 +46,13 @@ int check_and_input()
 
 template <class T>
 Matrix<T> result_of_operation(Matrix<T> first_obj, Matrix<T> second_obj, const char* operation) {
-	Matrix<T> help_obj(0, 0, (T)0);
+	Matrix<T> help_obj;
 	help_obj = first_obj;
 	if (strcmp("add", operation) == 0) {
-		if (first_obj.get_size_x() == second_obj.get_size_x() && first_obj.get_size_y() == second_obj.get_size_y()) return help_obj + second_obj;
+		if (first_obj.get_size_x() == second_obj.get_size_x() && first_obj.get_size_y() == second_obj.get_size_y()) {
+			help_obj + second_obj;
+			return help_obj;
+		}
 		else throw E_Different_Size();
 	}
 	else if (strcmp("sub", operation) == 0) {
@@ -57,7 +60,7 @@ Matrix<T> result_of_operation(Matrix<T> first_obj, Matrix<T> second_obj, const c
 		else throw E_Different_Size();
 	}
 	else if (strcmp("mul", operation) == 0) {
-		return help_obj;// * second_obj;
+		return help_obj * second_obj;
 	}
 	else if (strcmp("mul_scalar", operation) == 0) {
 		T scalar = 0;
@@ -90,7 +93,8 @@ Matrix<T> result_of_operation(Matrix<T> first_obj, Matrix<T> second_obj, const c
 			choose = check_and_input();
 		} while (choose < 1 || choose > 2);
 		if (choose == 2) help_obj = second_obj;
-		return help_obj;// .search_invers_matrix();
+		help_obj.search_invers_matrix();
+		//return help_obj.search_invers_matrix();
 	}
 	return help_obj;
 }

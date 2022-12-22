@@ -36,7 +36,7 @@ public:
 
 	T& operator () (int index_x, int index_y);
 	Matrix& operator () (int index_x, int index_y, T new_value);
-	Matrix& operator = (const Matrix& Object);
+	Matrix& operator = (const Matrix& Object) = default;
 	Matrix& operator + (const Matrix& Object);
 	Matrix& operator - (const Matrix& Object);
 	Matrix& operator * (const Matrix& Object);
@@ -46,12 +46,10 @@ public:
 
 	Matrix search_invers_matrix();
 
-	friend ostream& operator << (ostream& os, const Matrix& object)
-	{
-		Matrix mat = object;
-		for (int i = 0; i < object.get_size_x(); i++) {
-			for (int j = 0; j < object.get_size_y(); j++) {
-				os << "\t" << mat(i, j);
+	friend ostream& operator << (ostream& os, const Matrix& object) {
+		for (auto it = object.cbegin(); it != object.cend(); ++it) {
+			for (auto iter : (*it)) {
+				os << iter << "\t";
 			}
 			cout << endl;
 		}
